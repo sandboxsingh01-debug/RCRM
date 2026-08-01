@@ -48,10 +48,13 @@ function run(sql, params, cb) {
         lastID: isInsert && result.rows && result.rows[0] ? result.rows[0].id : 0,
         changes: result.rowCount || 0
       };
-      if (callback) callback.call(context, null);
+      if (callback) {
+        try { callback.call(context, null); }
+        catch (e) { console.error('⚠️ db.run callback error:', e.message); }
+      }
     })
     .catch((err) => {
-      console.error('⚠️ db.run error:', err.message);
+      console.error('⚠️ db.run query error:', err.message);
       if (callback) callback.call({ lastID: 0, changes: 0 }, err);
     });
 }
@@ -60,9 +63,12 @@ function run(sql, params, cb) {
 function get(sql, params, cb) {
   const { params: values, cb: callback } = normalizeArgs(params, cb);
   pool.query(toPostgres(sql, values))
-    .then((result) => callback(null, result.rows[0]))
+    .then((result) => {
+      try { callback(null, result.rows[0]); }
+      catch (e) { console.error('⚠️ db.get callback error:', e.message); }
+    })
     .catch((err) => {
-      console.error('⚠️ db.get error:', err.message);
+      console.error('⚠️ db.get query error:', err.message);
       callback(err);
     });
 }
@@ -71,9 +77,12 @@ function get(sql, params, cb) {
 function all(sql, params, cb) {
   const { params: values, cb: callback } = normalizeArgs(params, cb);
   pool.query(toPostgres(sql, values))
-    .then((result) => callback(null, result.rows))
+    .then((result) => {
+      try { callback(null, result.rows); }
+      catch (e) { console.error('⚠️ db.all callback error:', e.message); }
+    })
     .catch((err) => {
-      console.error('⚠️ db.all error:', err.message);
+      console.error('⚠️ db.all query error:', err.message);
       callback(err);
     });
 }
