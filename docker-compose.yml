@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: crm-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/database:/app/database
+      - ./uploads:/app/../uploads
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: crm-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  python-services:
+    build: ./python-services
+    container_name: crm-python
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/database:/app/database
+    restart: unless-stopped
+
+volumes:
+  db_data:

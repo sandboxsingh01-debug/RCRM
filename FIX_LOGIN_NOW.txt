@@ -1,0 +1,62 @@
+============================================
+  FIX LOGIN ON NGROK - FOLLOW THESE STEPS
+============================================
+
+PROBLEM: Frontend is on ngrok, but backend is NOT exposed.
+When you try to login, frontend can't reach backend API.
+
+SOLUTION: Expose backend on ngrok too and tell frontend the URL.
+
+-----------------------------------------------------------
+STEP 1: Open NEW Command Prompt
+-----------------------------------------------------------
+Run this:
+
+cd C:\Users\pvnsn\OneDrive\Desktop
+ngrok http 5000
+
+You will see output like:
+  Forwarding  https://abc123-xyz.ngrok-free.app -> http://localhost:5000
+
+COPY that https://abc123-xyz.ngrok-free.app URL
+
+-----------------------------------------------------------
+STEP 2: Update Frontend Config
+-----------------------------------------------------------
+Open file in Notepad:
+f:\RCRM\frontend\.env
+
+Delete everything and paste ONLY this line:
+REACT_APP_API_URL=https://YOUR-URL-FROM-STEP1.ngrok-free.app/api
+
+Example:
+REACT_APP_API_URL=https://abc123-xyz.ngrok-free.app/api
+
+SAVE the file (Ctrl+S)
+
+-----------------------------------------------------------
+STEP 3: Restart Frontend
+-----------------------------------------------------------
+Go to the terminal where frontend is running.
+Press: Ctrl+C (to stop it)
+
+Then run:
+cd f:\RCRM\frontend
+npm start
+
+Wait for it to say "Compiled successfully"
+
+-----------------------------------------------------------
+STEP 4: Test Login
+-----------------------------------------------------------
+Go to your frontend ngrok URL:
+https://narrow-expanse-unrefined.ngrok-free.dev/login
+
+Login:
+Username: admin
+Password: Admin@123
+
+-----------------------------------------------------------
+DONE! If still not working, check browser Console (F12)
+for exact error message.
+-----------------------------------------------------------

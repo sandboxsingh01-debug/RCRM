@@ -1,0 +1,8 @@
+version: "2"
+tunnels:
+  crm-backend:
+    proto: http
+    addr: 5000
+  crm-frontend:
+    proto: http
+    addr: 3000

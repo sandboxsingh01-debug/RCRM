@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Builds
+frontend/build/
+dist/
+
+# Environment files (keep the examples)
+.env
+.env.local
+backend/.env
+frontend/.env
+!backend/.env.example
+!frontend/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Data & uploads
+uploads/
+backend/database/
+backend/src/database/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+python-services/*.egg-info/
+
+# Local tools
+.tools/
+
+# Vercel / Render
+.vercel/
+
+# OS
+.DS_Store
