@@ -51,6 +51,7 @@ function run(sql, params, cb) {
       if (callback) callback.call(context, null);
     })
     .catch((err) => {
+      console.error('⚠️ db.run error:', err.message);
       if (callback) callback.call({ lastID: 0, changes: 0 }, err);
     });
 }
@@ -60,7 +61,10 @@ function get(sql, params, cb) {
   const { params: values, cb: callback } = normalizeArgs(params, cb);
   pool.query(toPostgres(sql, values))
     .then((result) => callback(null, result.rows[0]))
-    .catch((err) => callback(err));
+    .catch((err) => {
+      console.error('⚠️ db.get error:', err.message);
+      callback(err);
+    });
 }
 
 // db.all(sql, [params], callback) — all rows
@@ -68,7 +72,10 @@ function all(sql, params, cb) {
   const { params: values, cb: callback } = normalizeArgs(params, cb);
   pool.query(toPostgres(sql, values))
     .then((result) => callback(null, result.rows))
-    .catch((err) => callback(err));
+    .catch((err) => {
+      console.error('⚠️ db.all error:', err.message);
+      callback(err);
+    });
 }
 
 // Seed extra WhatsApp templates (idempotent, Postgres style)

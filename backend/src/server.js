@@ -63,6 +63,27 @@ app.get('/api/debug/login', (req, res) => {
   });
 });
 
+// Temporary: replicate the full login handler to pinpoint where it fails
+app.post('/api/debug/full-login', async (req, res) => {
+  const db = require('./config/database');
+  const bcrypt = require('bcryptjs');
+  const jwt = require('jsonwebtoken');
+  try {
+    const { username, password } = req.body;
+    const user = await new Promise((resolve, reject) => {
+      db.get('SELECT * FROM users WHERE username = ? AND is_active = true', [username], (err, row) => err ? reject(err) : resolve(row));
+    });
+    if (!user) return res.json({ step: 'no-user', body: req.body });
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    if (!isMatch) return res.json({ step: 'bad-password', body: req.body });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+    db.run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+    return res.json({ step: 'ok', token: token.slice(0, 20), hasSecret: !!process.env.JWT_SECRET, body: req.body });
+  } catch (e) {
+    return res.status(500).json({ step: 'error', error: e.message, stack: e.stack, body: req.body });
+  }
+});
+
 // Serve static frontend files
 const fs = require('fs');
 const frontendBuildPath = path.join(__dirname, '../../frontend/build');
