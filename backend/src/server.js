@@ -54,12 +54,13 @@ app.get('/api/debug/db', (req, res) => {
     .catch((e) => res.status(500).json({ success: false, error: e.message }));
 });
 
-// Temporary: run the exact login query to surface the real error
+// Temporary: run the exact login query through the db.get wrapper to surface the real error
 app.get('/api/debug/login', (req, res) => {
   const db = require('./config/database');
-  db._pool.query('SELECT * FROM users WHERE username = $1 AND is_active = true', ['admin'])
-    .then((r) => res.json({ success: true, rows: r.rows }))
-    .catch((e) => res.status(500).json({ success: false, error: e.message }));
+  db.get('SELECT * FROM users WHERE username = ? AND is_active = true', ['admin'], (err, user) => {
+    if (err) return res.status(500).json({ success: false, error: err.message, stack: err.stack });
+    res.json({ success: true, row: user && { id: user.id, username: user.username } });
+  });
 });
 
 // Serve static frontend files
