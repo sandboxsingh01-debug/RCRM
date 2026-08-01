@@ -43,6 +43,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Temporary DB diagnostic (remove after deployment is verified)
+app.get('/api/debug/db', (req, res) => {
+  const db = require('./config/database');
+  db._pool.query(
+    `SELECT current_database() AS db, current_user AS usr,
+            (SELECT count(*) FROM users) AS users,
+            (SELECT count(*) FROM information_schema.tables WHERE table_name = 'leads') AS has_leads`
+  ).then((r) => res.json({ success: true, data: r.rows[0] }))
+    .catch((e) => res.status(500).json({ success: false, error: e.message }));
+});
+
 // Serve static frontend files
 const fs = require('fs');
 const frontendBuildPath = path.join(__dirname, '../../frontend/build');

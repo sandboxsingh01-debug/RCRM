@@ -327,6 +327,7 @@ async function seedDatabase(query) {
 module.exports = { seedDatabase, TABLES, INDEXES };
 
 if (require.main === module) {
+  require('dotenv').config();
   const { Pool } = require('pg');
 
   const connectionString = process.env.DATABASE_URL;
