@@ -54,6 +54,14 @@ app.get('/api/debug/db', (req, res) => {
     .catch((e) => res.status(500).json({ success: false, error: e.message }));
 });
 
+// Temporary: run the exact login query to surface the real error
+app.get('/api/debug/login', (req, res) => {
+  const db = require('./config/database');
+  db._pool.query('SELECT * FROM users WHERE username = $1 AND is_active = true', ['admin'])
+    .then((r) => res.json({ success: true, rows: r.rows }))
+    .catch((e) => res.status(500).json({ success: false, error: e.message }));
+});
+
 // Serve static frontend files
 const fs = require('fs');
 const frontendBuildPath = path.join(__dirname, '../../frontend/build');
